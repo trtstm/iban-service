@@ -1,4 +1,4 @@
-package http
+package httpserver
 
 import (
 	"encoding/json"
@@ -9,12 +9,14 @@ import (
 )
 
 type ibanHandler struct {
-	logger *log.Logger
+	logger      *log.Logger
+	ibanService ibanService
 }
 
-func newIBANHandler(logger *log.Logger) *ibanHandler {
+func newIBANHandler(ibanService ibanService, logger *log.Logger) *ibanHandler {
 	return &ibanHandler{
-		logger: logger,
+		ibanService: ibanService,
+		logger:      logger,
 	}
 }
 
@@ -25,12 +27,20 @@ func (h *ibanHandler) Routes(router chi.Router) {
 
 // validateIBAN handles the request to validate an IBAN number.
 func (h *ibanHandler) validateIBAN(w http.ResponseWriter, r *http.Request) {
-	response, err := json.Marshal(validateIBANResponse{Valid: true})
+	iban := chi.URLParam(r, "iban")
+	valid, err := h.ibanService.ValidateIBAN(r.Context(), iban)
+
+	response := validateIBANResponse{Valid: valid}
+	if err != nil {
+		response.Reason = err.Error()
+	}
+
+	jsonResponse, err := json.Marshal(response)
 	if err != nil {
 		h.logger.Printf("failed to marshal response: %v", err)
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
 
-	w.Write(response)
+	w.Write(jsonResponse)
 }

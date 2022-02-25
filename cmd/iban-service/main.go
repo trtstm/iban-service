@@ -10,7 +10,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/trtstm/iban-service/http"
+	"github.com/trtstm/iban-service/httpserver"
+	"github.com/trtstm/iban-service/iban"
 )
 
 var (
@@ -26,8 +27,9 @@ func main() {
 
 	// Set up dependencies.
 	logger := log.Default()
+	ibanService := iban.NewIBANService()
 
-	httpServer := http.NewServer(apiAddress, logger)
+	httpServer := httpserver.NewServer(apiAddress, ibanService, logger)
 	go func() {
 		logger.Printf("starting server on %s\n", apiAddress)
 		httpServer.Open()

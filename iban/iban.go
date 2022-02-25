@@ -1,6 +1,10 @@
 package iban
 
-import "github.com/trtstm/iban-service/domain"
+import (
+	"context"
+
+	"github.com/trtstm/iban-service/domain"
+)
 
 type IBANService struct {
 }
@@ -11,7 +15,7 @@ func NewIBANService() *IBANService {
 }
 
 // ValidateIBAN validates the IBAN string and returns true if valid and false + an error if not.
-func (s *IBANService) ValidateIBAN(iban string) (bool, error) {
+func (s *IBANService) ValidateIBAN(_ context.Context, iban string) (bool, error) {
 	_, err := domain.Parse(iban)
 
 	if err != nil {

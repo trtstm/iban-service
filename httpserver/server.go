@@ -1,4 +1,4 @@
-package http
+package httpserver
 
 import (
 	"log"
@@ -12,16 +12,18 @@ import (
 
 // Server represents our http server.
 type Server struct {
-	addr   string
-	logger *log.Logger
-	ln     net.Listener
+	addr        string
+	logger      *log.Logger
+	ibanService ibanService
+	ln          net.Listener
 }
 
 // NewServer creates a new instance of the http server that will listen on addr.
-func NewServer(addr string, logger *log.Logger) *Server {
+func NewServer(addr string, ibanService ibanService, logger *log.Logger) *Server {
 	return &Server{
-		addr:   addr,
-		logger: logger,
+		addr:        addr,
+		ibanService: ibanService,
+		logger:      logger,
 	}
 }
 
@@ -60,7 +62,7 @@ func (s *Server) Handler() http.Handler {
 	)
 
 	r.Route("/api", func(r chi.Router) {
-		r.Route("/validate/iban", newIBANHandler(s.logger).Routes)
+		r.Route("/validate/iban", newIBANHandler(s.ibanService, s.logger).Routes)
 	})
 
 	fs := http.FileServer(http.Dir("./docs"))

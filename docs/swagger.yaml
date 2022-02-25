@@ -55,5 +55,5 @@ components:
           description: Description why IBAN is not valid.
       example: {
         "valid": false,
-        "reason": "wrong checksum",
+        "reason": "invalid check digits",
       }
