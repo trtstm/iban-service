@@ -1,0 +1,59 @@
+openapi: 3.0.3
+info:
+  title: IBAN validation service
+  version: 0.0.1
+  description: Service that will validate IBAN numbers.
+
+tags:
+  - name: Iban
+    description: Endpoints to validate IBAN numbers
+
+paths:
+  /api/validate/iban/{iban}:
+    get:
+      summary: Validate IBAN number
+      tags:
+        - Iban
+      description: Returns the validation of an IBAN number
+      parameters:
+        - $ref: '#/components/parameters/IBANPathParam'
+      responses:
+        200:
+          description: Validation response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBANValidationResponse'
+
+components:
+
+  parameters:
+
+    IBANPathParam:
+      in: path
+      name: iban
+      description: URL encoded IBAN number
+      required: true
+      schema:
+        type: string
+        example: BE71096123456769
+
+  
+
+  schemas:
+
+    IBANValidationResponse:
+      type: object
+      required:
+        - valid
+      properties:
+        valid:
+          type: boolean
+          description: True if valid, otherwise false.
+        reason:
+          type: string
+          description: Description why IBAN is not valid.
+      example: {
+        "valid": false,
+        "reason": "wrong checksum",
+      }

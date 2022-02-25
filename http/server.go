@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	middlewareOpenAPI "github.com/go-openapi/runtime/middleware"
 	"github.com/pkg/errors"
 )
 
@@ -53,9 +54,27 @@ func (s *Server) Close() {
 func (s *Server) Handler() http.Handler {
 	r := chi.NewRouter()
 
+	// Attach middlewares.
+	r.Use(
+		redocMiddleware,
+	)
+
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/validate/iban", newIBANHandler(s.logger).Routes)
 	})
 
+	fs := http.FileServer(http.Dir("./docs"))
+	r.Mount("/api-spec/", http.StripPrefix("/api-spec/", fs))
+
 	return r
+}
+
+// redocMiddleware will host a ReDoc from the generated OpenAPI specification.
+func redocMiddleware(next http.Handler) http.Handler {
+	return middlewareOpenAPI.Redoc(middlewareOpenAPI.RedocOpts{
+		BasePath: "/",
+		Path:     "docs",
+		SpecURL:  "./api-spec/swagger.yaml",
+		Title:    "IBAN validation Service API Documentation",
+	}, next)
 }
