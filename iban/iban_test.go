@@ -42,6 +42,18 @@ func Test_iban_ValidateIBAN(t *testing.T) {
 			Error: errors.New("invalid country code"),
 		},
 		{
+			Name:  "Wrong check digits 1",
+			IBAN:  "BEE777777777777777777777777777777",
+			Valid: false,
+			Error: errors.New("invalid check digits"),
+		},
+		{
+			Name:  "Wrong check digits 2",
+			IBAN:  "BE7E77777777777777777777777777777",
+			Valid: false,
+			Error: errors.New("invalid check digits"),
+		},
+		{
 			Name:  "Wrong bban 1",
 			IBAN:  "BE77 世界1231",
 			Valid: false,
