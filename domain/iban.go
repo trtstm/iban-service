@@ -1,9 +1,11 @@
 package domain
 
 import (
-	"errors"
 	"regexp"
+	"strconv"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type IBAN struct {
@@ -14,6 +16,7 @@ type IBAN struct {
 
 var countryCodeRe = regexp.MustCompile("^[a-zA-Z]{2}$")
 var checkDigitsRe = regexp.MustCompile("^[0-9]{2}$")
+var bbanRe = regexp.MustCompile("^[a-zA-Z0-9]{1,30}$")
 
 // Parse parses a IBAN string
 func Parse(iban string) (IBAN, error) {
@@ -34,6 +37,15 @@ func Parse(iban string) (IBAN, error) {
 	if !checkDigitsRe.MatchString(checkDigitsStr) {
 		return IBAN{}, errors.New("invalid check digits")
 	}
+	checkDigits, err := strconv.ParseUint(checkDigitsStr, 10, 32)
+	if err != nil {
+		return IBAN{}, errors.Wrap(err, "could not parse check digits as uint")
+	}
 
-	return IBAN{}, nil
+	bban := iban[4:]
+	if !bbanRe.MatchString(bban) {
+		return IBAN{}, errors.New("invalid bban")
+	}
+
+	return IBAN{countryCode: countryCode, checkDigits: uint(checkDigits), bban: bban}, nil
 }
