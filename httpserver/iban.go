@@ -21,7 +21,7 @@ func newIBANHandler(ibanService ibanService, logger *log.Logger) *ibanHandler {
 }
 
 func (h *ibanHandler) Routes(router chi.Router) {
-	// Route for fetching a specific user on id.
+	// Route for validating an iban number.
 	router.Get("/{iban}", h.validateIBAN)
 }
 
