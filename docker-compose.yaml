@@ -3,5 +3,5 @@ services:
   iban-service:
     build: ./
     ports:
-      - "8080:80"
+      - "${PORT}:80"
 
