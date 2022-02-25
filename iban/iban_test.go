@@ -42,6 +42,12 @@ func Test_iban_ValidateIBAN(t *testing.T) {
 			Error: errors.New("invalid country code"),
 		},
 		{
+			Name:  "Wrong country code 3",
+			IBAN:  "be7777777777777777777777777777777",
+			Valid: false,
+			Error: errors.New("invalid country code"),
+		},
+		{
 			Name:  "Wrong check digits 1",
 			IBAN:  "BEE777777777777777777777777777777",
 			Valid: false,
@@ -56,6 +62,12 @@ func Test_iban_ValidateIBAN(t *testing.T) {
 		{
 			Name:  "Wrong bban 1",
 			IBAN:  "BE77 世界1231",
+			Valid: false,
+			Error: errors.New("invalid bban"),
+		},
+		{
+			Name:  "Wrong bban 2",
+			IBAN:  "BE77 aaa1231",
 			Valid: false,
 			Error: errors.New("invalid bban"),
 		},
@@ -88,6 +100,24 @@ func Test_iban_ValidateIBAN(t *testing.T) {
 			IBAN:  "PS21AGRZ549376376519352845978",
 			Valid: true,
 			Error: nil,
+		},
+		{
+			Name:  "Invalid check digits 1",
+			IBAN:  "PS31AGRZ549376376519352845978",
+			Valid: false,
+			Error: errors.New("invalid check digits"),
+		},
+		{
+			Name:  "Invalid check digits 2",
+			IBAN:  "PS41AGRZ549376376519352845978",
+			Valid: false,
+			Error: errors.New("invalid check digits"),
+		},
+		{
+			Name:  "Invalid check digits 3",
+			IBAN:  "PS51AGRZ549376376519352845978",
+			Valid: false,
+			Error: errors.New("invalid check digits"),
 		},
 	} {
 		t.Run(tc.Name, func(t *testing.T) {
